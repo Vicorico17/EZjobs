@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="EZJobs — find work that fits and apply in minutes." />
+  <title>EZJobs — Find work that fits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain"></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="EZJobs home"><span class="brand-mark">EZ</span><span>Jobs</span></a>
+    <nav aria-label="Main navigation">
+      <a class="active" href="#jobs">Find jobs</a>
+      <button class="nav-link" id="savedNav">Saved <span class="count" id="savedCount">0</span></button>
+      <a href="#how">How it works</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" id="signInBtn">Sign in</button>
+      <button class="btn btn-dark" id="profileBtn">Create profile <span>↗</span></button>
+    </div>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">☰</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow"><span></span> The simpler way to get hired</div>
+      <h1>Good jobs.<br><em>Less job hunting.</em></h1>
+      <p>Skip the endless tabs. Discover roles matched to what you want, then apply in a few easy steps.</p>
+      <form class="searchbar" id="searchForm">
+        <label><span class="search-icon">⌕</span><input id="searchInput" type="search" placeholder="Job title, skill, or company" aria-label="Job title, skill, or company"></label>
+        <div class="divider"></div>
+        <label class="location"><span>⌖</span><input id="locationInput" type="text" placeholder="City or remote" aria-label="City or remote"></label>
+        <button class="btn btn-accent" type="submit">Find jobs <span>→</span></button>
+      </form>
+      <div class="popular"><span>Popular:</span><button data-search="Designer">Designer</button><button data-search="Developer">Developer</button><button data-search="Marketing">Marketing</button><button data-search="Remote">Remote</button></div>
+      <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="spark s1">✦</div><div class="spark s2">✦</div><div class="mini-card mc1"><b>4.9</b><span>candidate rating</span></div><div class="mini-card mc2"><span>New match</span><b>Product Designer</b></div></div>
+    </section>
+
+    <section class="jobs-section" id="jobs">
+      <div class="section-head">
+        <div><span class="kicker">HANDPICKED FOR YOU</span><h2>Jobs worth your time</h2></div>
+        <p>Fresh opportunities from teams that value people, not paperwork.</p>
+      </div>
+      <div class="filter-row" id="filters">
+        <button class="filter active" data-filter="All">All roles</button>
+        <button class="filter" data-filter="Design">Design</button>
+        <button class="filter" data-filter="Engineering">Engineering</button>
+        <button class="filter" data-filter="Marketing">Marketing</button>
+        <button class="filter" data-filter="Operations">Operations</button>
+        <button class="filter filter-more" id="remoteFilter">Remote only <span>○</span></button>
+      </div>
+      <div class="job-layout">
+        <div class="job-list" id="jobList" aria-live="polite"></div>
+        <aside class="job-detail" id="jobDetail"></aside>
+      </div>
+    </section>
+
+    <section class="how" id="how">
+      <div><span class="kicker">YOUR NEXT MOVE, MADE EASY</span><h2>From “maybe” to<br>“I got the job.”</h2></div>
+      <div class="steps">
+        <article><span>01</span><div class="step-icon">◎</div><h3>Tell us what fits</h3><p>Share what you’re good at and what kind of work you want.</p></article>
+        <article><span>02</span><div class="step-icon">⌁</div><h3>Meet your matches</h3><p>See clear, relevant roles without digging through the noise.</p></article>
+        <article><span>03</span><div class="step-icon">↗</div><h3>Apply in minutes</h3><p>Use one simple profile to apply—then keep track in one place.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-wrap" id="applyModal" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" data-close aria-label="Close">×</button>
+      <div id="modalContent"></div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

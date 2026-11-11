@@ -1,28 +1,451 @@
-const jobs=[
- {id:1,title:'Senior Product Designer',company:'Northstar',initial:'N',color:'#d6e8ff',location:'Remote · Europe',type:'Full-time',category:'Design',salary:'€72k – €92k',posted:'2h ago',match:96,summary:'Shape simple, thoughtful tools used by thousands of independent teams.',skills:['Product design','Figma','Design systems'],about:'Northstar helps small teams do their best work without the busywork. You’ll own meaningful product areas from first sketch to shipped experience.',bullets:['Lead end-to-end design for core product flows','Partner closely with product and engineering','Grow a practical, accessible design system']},
- {id:2,title:'Frontend Developer',company:'Luma Labs',initial:'L',color:'#f8d8c7',location:'London · Hybrid',type:'Full-time',category:'Engineering',salary:'£65k – £82k',posted:'5h ago',match:92,summary:'Build fast, expressive web experiences for a new creative platform.',skills:['React','TypeScript','CSS'],about:'Luma Labs is building a more joyful way for creative people to work together. This role sits at the heart of the product experience.',bullets:['Ship polished React interfaces','Improve performance and accessibility','Work directly with designers and customers']},
- {id:3,title:'Growth Marketing Lead',company:'Morrow',initial:'M',color:'#ded8ff',location:'Remote',type:'Full-time',category:'Marketing',salary:'$90k – $115k',posted:'1d ago',match:89,summary:'Own experiments that help more people discover better financial habits.',skills:['Growth','Analytics','B2C'],about:'Morrow makes personal finance feel calm and approachable. You’ll build our growth engine with equal parts creativity and rigor.',bullets:['Plan and run acquisition experiments','Own funnel reporting and insights','Develop a distinctive content strategy']},
- {id:4,title:'Customer Operations',company:'Good Day',initial:'G',color:'#d8f0c6',location:'Berlin · Hybrid',type:'Full-time',category:'Operations',salary:'€48k – €60k',posted:'1d ago',match:87,summary:'Make every customer interaction easy, human, and genuinely useful.',skills:['Operations','Customer success','SaaS'],about:'Good Day is rethinking the daily tools people use at work. You’ll turn customer insight into a noticeably better experience.',bullets:['Support and delight a growing customer base','Build scalable support processes','Share product insights across the team']},
- {id:5,title:'Brand Designer',company:'Sundae',initial:'S',color:'#ffe3a6',location:'Barcelona · Remote',type:'Contract',category:'Design',salary:'€400 – €550/day',posted:'2d ago',match:84,summary:'Bring warmth, clarity, and character to an ambitious consumer brand.',skills:['Brand','Illustration','Campaigns'],about:'Sundae makes everyday wellness feel less serious. You’ll evolve our visual voice across product, campaigns, and culture.',bullets:['Create campaigns from concept to delivery','Evolve brand guidelines and assets','Collaborate with a small creative team']},
- {id:6,title:'Product Engineer',company:'Patch',initial:'P',color:'#cdeee6',location:'Remote · Americas',type:'Full-time',category:'Engineering',salary:'$120k – $150k',posted:'3d ago',match:82,summary:'Work across the stack to turn complex workflows into calm software.',skills:['React','Node.js','Postgres'],about:'Patch builds flexible operational software for modern services businesses. Engineers here talk to users and own outcomes.',bullets:['Build product features across the stack','Talk to users and shape solutions','Raise the bar for engineering quality']}
-];
-let selected=jobs[0].id,category='All',remoteOnly=false,query='',saved=new Set(JSON.parse(localStorage.getItem('ezjobs-saved')||'[]'));
-const $=s=>document.querySelector(s); const jobList=$('#jobList'),detail=$('#jobDetail');
-function visibleJobs(){return jobs.filter(j=>(category==='All'||j.category===category)&&(!remoteOnly||j.location.includes('Remote'))&&(!query||`${j.title} ${j.company} ${j.category} ${j.skills.join(' ')} ${j.location}`.toLowerCase().includes(query.toLowerCase())))}
-function logo(j){return `<div class="company-logo" style="background:${j.color}">${j.initial}</div>`}
-function render(){const found=visibleJobs();if(found.length&&!found.some(j=>j.id===selected))selected=found[0].id;jobList.innerHTML=found.length?found.map(j=>`<button class="job-card ${selected===j.id?'selected':''}" data-id="${j.id}">${logo(j)}<div class="job-meta"><h3>${j.title}</h3><p>${j.company} · ${j.location}</p><div class="tags"><span class="tag">${j.type}</span><span class="tag">${j.salary}</span><span class="tag">${j.match}% match</span></div></div><span class="save-btn ${saved.has(j.id)?'saved':''}" data-save="${j.id}" aria-label="Save ${j.title}">${saved.has(j.id)?'♥':'♡'}</span></button>`).join(''):`<div class="empty"><h3>No matches yet</h3><p>Try another title, location, or filter.</p></div>`;renderDetail(found.find(j=>j.id===selected));$('#savedCount').textContent=saved.size}
-function renderDetail(j){if(!j){detail.innerHTML='';return}detail.innerHTML=`<div class="detail-top">${logo(j)}<div><h2>${j.title}</h2><p>${j.company} · ${j.posted}</p></div><button class="detail-save save-btn ${saved.has(j.id)?'saved':''}" data-save="${j.id}">${saved.has(j.id)?'♥ Saved':'♡ Save'}</button></div><div class="detail-info"><span><b>Location</b>${j.location}</span><span><b>Job type</b>${j.type}</span><span><b>Salary</b>${j.salary}</span><span><b>Your match</b>${j.match}%</span></div><div class="detail-body"><h3>About the role</h3><p>${j.about}</p><h3>What you’ll do</h3><ul>${j.bullets.map(x=>`<li>${x}</li>`).join('')}</ul><div class="tags">${j.skills.map(x=>`<span class="tag">${x}</span>`).join('')}</div></div><div class="detail-actions"><button class="btn apply-btn" data-apply="${j.id}">Apply now →</button></div>`}
-document.addEventListener('click',e=>{const card=e.target.closest('.job-card'),save=e.target.closest('[data-save]'),apply=e.target.closest('[data-apply]');if(save){e.stopPropagation();toggleSave(+save.dataset.save);return}if(card){selected=+card.dataset.id;render()}if(apply)openApply(+apply.dataset.apply);if(e.target.closest('[data-close]'))closeModal()});
-function toggleSave(id){saved.has(id)?saved.delete(id):saved.add(id);localStorage.setItem('ezjobs-saved',JSON.stringify([...saved]));render();toast(saved.has(id)?'Saved to your list':'Removed from saved')}
-$('#filters').addEventListener('click',e=>{const f=e.target.closest('[data-filter]');if(f){category=f.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===f));render()}});
-$('#remoteFilter').onclick=()=>{remoteOnly=!remoteOnly;$('#remoteFilter').classList.toggle('on',remoteOnly);$('#remoteFilter span').textContent=remoteOnly?'●':'○';render()};
-$('#searchForm').onsubmit=e=>{e.preventDefault();query=$('#searchInput').value+' '+$('#locationInput').value;render();$('#jobs').scrollIntoView({behavior:'smooth'})};
-document.querySelectorAll('[data-search]').forEach(b=>b.onclick=()=>{$('#searchInput').value=b.dataset.search;query=b.dataset.search;render();$('#jobs').scrollIntoView({behavior:'smooth'})});
-$('#savedNav').onclick=()=>{query='';category='All';remoteOnly=false;const only=jobs.filter(j=>saved.has(j.id));jobList.innerHTML=only.length?only.map(j=>`<button class="job-card" data-id="${j.id}">${logo(j)}<div class="job-meta"><h3>${j.title}</h3><p>${j.company} · ${j.location}</p><div class="tags"><span class="tag">${j.salary}</span></div></div><span class="save-btn saved" data-save="${j.id}">♥</span></button>`).join(''):`<div class="empty"><h3>No saved jobs yet</h3><p>Tap the heart on a role to keep it here.</p></div>`;renderDetail(only[0]);$('#jobs').scrollIntoView({behavior:'smooth'})};
-$('#menuBtn').onclick=()=>$('.topbar').classList.toggle('open');
-$('#profileBtn').onclick=()=>toast('Profile setup is coming next');$('#signInBtn').onclick=()=>toast('Welcome back — sign in is coming next');
-function openApply(id){const j=jobs.find(x=>x.id===id),modal=$('#applyModal');modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';showStep(j,1)}
-function showStep(j,step){const c=$('#modalContent');if(step===1)c.innerHTML=`<span class="kicker">QUICK APPLY · 1 OF 2</span><h2>Apply to ${j.company}</h2><p class="sub">One short form. No account needed.</p><div class="progress"><i class="done"></i><i></i></div><form id="applyForm"><div class="form-grid"><div class="field"><label>First name</label><input required name="first" placeholder="Alex"></div><div class="field"><label>Last name</label><input required name="last" placeholder="Morgan"></div><div class="field full"><label>Email</label><input required type="email" name="email" placeholder="alex@example.com"></div><div class="field full"><label>LinkedIn or portfolio <small>(optional)</small></label><input name="link" placeholder="https://"></div></div><div class="modal-actions"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-dark" type="submit">Continue →</button></div></form>`;else if(step===2)c.innerHTML=`<span class="kicker">QUICK APPLY · 2 OF 2</span><h2>Almost there</h2><p class="sub">Add your résumé and a quick note for the team.</p><div class="progress"><i class="done"></i><i class="done"></i></div><div class="field"><label>Résumé</label><label class="upload"><input type="file" accept=".pdf,.doc,.docx" hidden id="resume"><b id="uploadText">↑ Choose a file</b><br><small>PDF or DOC, up to 10MB</small></label></div><div class="field"><label>Why are you interested? <small>(optional)</small></label><textarea rows="4" placeholder="A few honest sentences is plenty."></textarea></div><div class="modal-actions"><button class="btn btn-ghost" id="backBtn">← Back</button><button class="btn btn-dark" id="submitApplication">Send application →</button></div>`;if(step===1)$('#applyForm').onsubmit=e=>{e.preventDefault();showStep(j,2)};else{$('#backBtn').onclick=()=>showStep(j,1);$('#resume').onchange=e=>{$('#uploadText').textContent=e.target.files[0]?.name||'↑ Choose a file'};$('#submitApplication').onclick=()=>{c.innerHTML=`<div class="success"><div class="success-mark">✓</div><span class="kicker">APPLICATION SENT</span><h2>Nice work!</h2><p class="sub">Your application for <b>${j.title}</b> at ${j.company} is on its way. We’ll keep it organized for you.</p><button class="btn btn-dark" data-close>Back to jobs</button></div>`}}}
-function closeModal(){$('#applyModal').classList.remove('open');$('#applyModal').setAttribute('aria-hidden','true');document.body.style.overflow=''}
-function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});render();
+'use strict';
+const $ = (selector) => document.querySelector(selector);
+const html = JobCore.escapeHTML;
+const isProfile = (value) =>
+  value && ['first', 'last', 'email', 'link'].every((key) => typeof value[key] === 'string');
+let storage;
+try {
+  storage = window.localStorage;
+} catch {
+  storage = null;
+}
+const read = (key, fallback, validate) => JobCore.readStored(storage, key, fallback, validate);
+const savedIds = read(
+  'ezjobs-saved',
+  [],
+  (value) => Array.isArray(value) && value.every(Number.isInteger),
+);
+const state = {
+  selected: JOBS[0].id,
+  category: 'All',
+  remoteOnly: false,
+  query: '',
+  location: '',
+  savedOnly: false,
+  sort: 'recent',
+  saved: new Set(savedIds.filter((id) => JOBS.some((job) => job.id === id))),
+};
+let profile = read('ezjobs-profile', null, isProfile);
+let drafts = read(
+  'ezjobs-drafts',
+  [],
+  (value) =>
+    Array.isArray(value) &&
+    value.every(
+      (draft) =>
+        draft &&
+        Number.isInteger(draft.jobId) &&
+        isProfile(draft.person) &&
+        typeof draft.note === 'string' &&
+        typeof draft.updated === 'string' &&
+        typeof draft.resumeName === 'string',
+    ),
+);
+let toastTimer;
+let returnFocus;
+let application;
+let mobileDetails = false;
+function persist(key, value) {
+  try {
+    storage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch {
+    toast('Device storage is unavailable. Changes will last only for this visit.');
+    return false;
+  }
+}
+function toast(message) {
+  clearTimeout(toastTimer);
+  $('#toast').textContent = message;
+  $('#toast').classList.add('show');
+  toastTimer = setTimeout(() => $('#toast').classList.remove('show'), 4500);
+}
+function logo(job) {
+  return `<span class="company-logo" style="background:${job.color}" aria-hidden="true">${job.initial}</span>`;
+}
+function saveButton(job) {
+  const saved = state.saved.has(job.id);
+  return `<button class="save-btn ${saved ? 'saved' : ''}" data-save="${job.id}" aria-label="${saved ? 'Unsave' : 'Save'} ${html(job.title)}" aria-pressed="${saved}"><svg viewBox="0 0 18 22" aria-hidden="true"><path d="M3 2h12v18l-6-4-6 4Z"/></svg></button>`;
+}
+function resetFilters() {
+  Object.assign(state, { category: 'All', remoteOnly: false, query: '', location: '' });
+  $('#searchInput').value = '';
+  $('#locationInput').value = '';
+  mobileDetails = false;
+  render();
+}
+function render() {
+  const found = JobCore.filterJobs(JOBS, state);
+  if (!found.some((job) => job.id === state.selected)) state.selected = found[0]?.id ?? null;
+  if (!found.length) mobileDetails = false;
+  $('#jobList').innerHTML = found.length
+    ? found
+        .map(
+          (job) => `<article class="job-card ${job.id === state.selected ? 'selected' : ''}">
+    <button class="card-main" data-id="${job.id}" aria-pressed="${job.id === state.selected}" aria-controls="jobDetail" aria-label="View ${html(job.title)} at ${html(job.company)}">
+      <span class="card-head">${logo(job)}<span><span class="card-company">${job.company}</span><span class="card-location">${job.location}</span></span></span>
+      <div class="job-meta"><h3>${job.title}</h3><div class="tags"><span class="tag">${job.type}</span><span class="tag">${job.category}</span>${/Remote/.test(job.location) ? '<span class="tag remote">Remote</span>' : ''}${drafts.some((draft) => draft.jobId === job.id) ? '<span class="tag">Draft saved</span>' : ''}</div></div>
+      <span class="card-bottom"><strong>${job.salary}<small>${job.type === 'Contract' ? '' : ' / year'}</small></strong><span>Sample role ↗</span></span>
+    </button>${saveButton(job)}</article>`,
+        )
+        .join('')
+    : `<div class="empty"><span aria-hidden="true">⌕</span><h3>${state.savedOnly && !state.saved.size ? 'Your next chapter starts with a shortlist' : 'A different search could be the one'}</h3><p>${state.savedOnly && !state.saved.size ? 'Save a role using its bookmark button. It’ll be waiting right here.' : 'Try a broader title, another location, or fewer filters.'}</p><button class="btn btn-ghost" id="emptyReset">${state.savedOnly ? 'Browse all roles' : 'Clear filters'}</button></div>`;
+  renderDetail(found.find((job) => job.id === state.selected));
+  $('#savedCount').textContent = state.saved.size;
+  $('#resultCount').innerHTML =
+    `<strong>${found.length} ${state.savedOnly ? 'saved ' : ''}${found.length === 1 ? 'opportunity' : 'opportunities'}</strong> to explore`;
+  $('#clearFilters').hidden = !(
+    state.query ||
+    state.location ||
+    state.category !== 'All' ||
+    state.remoteOnly
+  );
+  document.querySelectorAll('[data-filter]').forEach((button) => {
+    const active = button.dataset.filter === state.category;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', active);
+  });
+  $('#remoteFilter').setAttribute('aria-pressed', state.remoteOnly);
+  $('#savedNav').classList.toggle('active', state.savedOnly);
+  $('#savedNav').setAttribute('aria-pressed', state.savedOnly);
+  $('#findNav').classList.toggle('active', !state.savedOnly);
+  if (state.savedOnly) $('#findNav').removeAttribute('aria-current');
+  else $('#findNav').setAttribute('aria-current', 'page');
+  $('.job-layout').classList.toggle('show-detail', mobileDetails);
+  $('#profileBtn').innerHTML =
+    `${profile ? 'My profile' : 'Create profile'} <span aria-hidden="true">↗</span>`;
+}
+function renderDetail(job) {
+  if (!job) {
+    $('#jobDetail').innerHTML = '';
+    return;
+  }
+  $('#jobDetail').innerHTML =
+    `<button class="mobile-back" id="backToResults">← Back to results</button>
+    <div class="detail-top">${logo(job)}<div><p>${job.company}</p><small>${job.category} · Sample company</small></div>${saveButton(job)}</div>
+    <h2 class="detail-title">${job.title}</h2><p class="detail-summary">${job.summary}</p>
+    <dl class="detail-info"><div><dt>LOCATION</dt><dd>${job.location}</dd></div><div><dt>SALARY ${job.type === 'Contract' ? '· DAILY' : '· ANNUAL'}</dt><dd>${job.salary}</dd></div><div><dt>COMMITMENT</dt><dd>${job.type}</dd></div><div><dt>WORK STYLE</dt><dd>${/Remote/.test(job.location) ? 'Remote' : 'Hybrid'}</dd></div></dl>
+    <div class="detail-body"><h3>A little about the role</h3><p>${job.about}</p><h3>What you’ll make happen</h3><ul>${job.bullets.map((line) => `<li>${line}</li>`).join('')}</ul><h3>What you’ll bring</h3><div class="tags">${job.skills.map((skill) => `<span class="tag">${skill}</span>`).join('')}</div></div>
+    <div class="detail-actions"><button class="btn apply-btn" data-apply="${job.id}">${drafts.some((draft) => draft.jobId === job.id) ? 'Edit application draft' : 'Prepare application'} <span aria-hidden="true">↗</span></button><small>Two simple steps. Saved on this device, never sent.</small></div>`;
+}
+function scrollToJobs() {
+  $('#jobs').scrollIntoView({
+    behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+  });
+}
+function closeMenu() {
+  $('.topbar').classList.remove('open');
+  $('#menuBtn').setAttribute('aria-expanded', 'false');
+}
+$('#menuBtn').onclick = () => {
+  const open = $('.topbar').classList.toggle('open');
+  $('#menuBtn').setAttribute('aria-expanded', open);
+};
+$('#mainNav').addEventListener('click', closeMenu);
+$('#findNav').onclick = () => {
+  state.savedOnly = false;
+  mobileDetails = false;
+  render();
+};
+$('#savedNav').onclick = () => {
+  state.savedOnly = !state.savedOnly;
+  resetFilters();
+  scrollToJobs();
+};
+$('#clearFilters').onclick = resetFilters;
+$('#filters').onclick = (event) => {
+  const button = event.target.closest('[data-filter]');
+  if (!button) return;
+  state.category = button.dataset.filter;
+  mobileDetails = false;
+  render();
+};
+$('#remoteFilter').onclick = () => {
+  state.remoteOnly = !state.remoteOnly;
+  mobileDetails = false;
+  render();
+};
+$('#sortJobs').onchange = (event) => {
+  state.sort = event.target.value;
+  render();
+};
+$('#searchForm').onsubmit = (event) => {
+  event.preventDefault();
+  state.query = $('#searchInput').value.trim();
+  state.location = $('#locationInput').value.trim();
+  state.savedOnly = false;
+  mobileDetails = false;
+  render();
+  scrollToJobs();
+};
+document.querySelectorAll('[data-search]').forEach(
+  (button) =>
+    (button.onclick = () => {
+      state.savedOnly = false;
+      resetFilters();
+      if (button.dataset.search === 'Remote') state.remoteOnly = true;
+      else {
+        state.query = button.dataset.search;
+        $('#searchInput').value = state.query;
+      }
+      render();
+      scrollToJobs();
+    }),
+);
+document.addEventListener('click', (event) => {
+  const save = event.target.closest('[data-save]');
+  if (save) {
+    const inDetail = !!save.closest('#jobDetail');
+    const id = Number(save.dataset.save);
+    state.saved.has(id) ? state.saved.delete(id) : state.saved.add(id);
+    const stored = persist('ezjobs-saved', [...state.saved]);
+    render();
+    const focus =
+      $(`${inDetail ? '#jobDetail' : '#jobList'} [data-save="${id}"]`) ||
+      $('#jobList .card-main') ||
+      $('#emptyReset');
+    focus?.focus({ preventScroll: true });
+    if (stored)
+      toast(
+        state.saved.has(id)
+          ? 'Saved. A good possibility to come back to.'
+          : 'Removed from your saved jobs.',
+      );
+    return;
+  }
+  const card = event.target.closest('[data-id]');
+  if (card) {
+    state.selected = Number(card.dataset.id);
+    mobileDetails = true;
+    render();
+    if (matchMedia('(max-width: 800px)').matches) {
+      $('#jobDetail').focus({ preventScroll: true });
+      $('#jobDetail').scrollIntoView({ block: 'start' });
+    } else $(`[data-id="${state.selected}"]`).focus({ preventScroll: true });
+  }
+  const apply = event.target.closest('[data-apply]');
+  if (apply) openApply(Number(apply.dataset.apply));
+  if (event.target.closest('#backToResults')) {
+    mobileDetails = false;
+    render();
+    $(`[data-id="${state.selected}"]`)?.focus();
+  }
+  if (event.target.closest('#emptyReset')) {
+    state.savedOnly = false;
+    resetFilters();
+    $('#jobs').focus({ preventScroll: true });
+  }
+  if (event.target.closest('[data-close]')) $('#appDialog').close();
+});
+function openDialog() {
+  returnFocus = document.activeElement;
+  if (!$('#appDialog').open) $('#appDialog').showModal();
+  document.body.style.overflow = 'hidden';
+}
+function focusModal() {
+  ($('#modalContent input') || $('#modalContent button') || $('#closeDialog')).focus();
+}
+$('#closeDialog').onclick = () => $('#appDialog').close();
+$('#appDialog').addEventListener('keydown', (event) => {
+  if (event.key !== 'Tab') return;
+  const controls = [
+    ...event.currentTarget.querySelectorAll('button, input, textarea, select, a[href]'),
+  ].filter((control) => !control.disabled && control.getClientRects().length);
+  const first = controls[0];
+  const last = controls.at(-1);
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last?.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first?.focus();
+  }
+});
+$('#appDialog').addEventListener('click', (event) => {
+  if (event.target === $('#appDialog')) {
+    const rect = event.target.getBoundingClientRect();
+    if (
+      event.clientX < rect.left ||
+      event.clientX > rect.right ||
+      event.clientY < rect.top ||
+      event.clientY > rect.bottom
+    )
+      event.target.close();
+  }
+});
+$('#appDialog').addEventListener('close', () => {
+  document.body.style.overflow = '';
+  application = null;
+  if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
+  else ($('#jobDetail [data-apply]') || $('#profileBtn')).focus({ preventScroll: true });
+});
+function personFields(person = {}) {
+  return `<div class="form-grid"><div class="field"><label for="first">First name</label><input id="first" name="first" autocomplete="given-name" required maxlength="80" value="${html(person.first)}"></div><div class="field"><label for="last">Last name</label><input id="last" name="last" autocomplete="family-name" required maxlength="80" value="${html(person.last)}"></div><div class="field full"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="254" value="${html(person.email)}"></div><div class="field full"><label for="link">Portfolio or LinkedIn <small>(optional)</small></label><input id="link" name="link" type="url" placeholder="https://" autocomplete="url" maxlength="500" value="${html(person.link)}"></div></div>`;
+}
+function personFromForm(form) {
+  return Object.fromEntries([...new FormData(form)].map(([key, value]) => [key, value.trim()]));
+}
+function validPerson(form) {
+  for (const name of ['first', 'last']) {
+    const input = form.elements[name];
+    input.setCustomValidity(input.value.trim() ? '' : 'Please enter your name.');
+    input.oninput = () => input.setCustomValidity('');
+  }
+  return form.reportValidity();
+}
+function openApply(id) {
+  const draft = drafts.find((item) => item.jobId === id);
+  application = {
+    job: JOBS.find((job) => job.id === id),
+    person: { ...(draft?.person || profile || {}) },
+    note: draft?.note || '',
+    file: null,
+    previousResume: draft?.resumeName || '',
+  };
+  openDialog();
+  showApplyStep(1);
+}
+function showApplyStep(step) {
+  const app = application;
+  const job = app.job;
+  $('#modalContent').innerHTML =
+    `<span class="kicker">APPLICATION DRAFT · STEP ${step} OF 2</span><h2 id="modalTitle">${step === 1 ? `Your next step with ${job.company}` : 'Make it yours.'}</h2><p class="sub">${job.title}</p><div class="progress" aria-hidden="true"><span class="done"></span><span class="${step === 2 ? 'done' : ''}"></span></div>` +
+    (step === 1
+      ? `<form id="applyForm">${personFields(app.person)}<p class="notice">This is a sample role. Your draft stays on this device and is not sent to an employer.</p><div class="modal-actions"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button class="btn btn-dark" type="submit">Continue →</button></div></form>`
+      : `<form id="draftForm"><div class="field"><label for="resume">Your résumé</label><div class="upload"><input type="file" id="resume" accept=".pdf,.doc,.docx" aria-describedby="resumeHelp fileError"><p class="file-name" id="fileName">${html(app.file?.name || (app.previousResume ? `Previous file: ${app.previousResume}. Please choose it again.` : 'Choose a file to complete your draft.'))}</p><small id="resumeHelp">PDF, DOC, or DOCX · up to 10 MB. Only the filename is saved; file contents never leave this page.</small></div></div><div class="field"><label for="note">Why this role? <small>(optional)</small></label><textarea id="note" rows="4" maxlength="3000" placeholder="A few thoughtful sentences about you and the role.">${html(app.note)}</textarea></div><p class="form-error" id="fileError" role="alert"></p><div class="modal-actions"><button type="button" class="btn btn-ghost" id="backStep">← Back</button><button type="submit" class="btn btn-dark">Save draft ↗</button></div></form>`);
+  if (step === 1)
+    $('#applyForm').onsubmit = (event) => {
+      event.preventDefault();
+      if (!validPerson(event.target)) return;
+      app.person = personFromForm(event.target);
+      showApplyStep(2);
+    };
+  else {
+    $('#resume').onchange = (event) => {
+      app.file = event.target.files[0] || null;
+      $('#fileName').textContent = app.file?.name || 'No file selected';
+      $('#fileError').textContent = JobCore.resumeError(app.file);
+    };
+    $('#backStep').onclick = () => {
+      app.note = $('#note').value;
+      showApplyStep(1);
+    };
+    $('#draftForm').onsubmit = (event) => {
+      event.preventDefault();
+      const error = JobCore.resumeError(app.file);
+      if (error) {
+        $('#fileError').textContent = error;
+        $('#resume').focus();
+        return;
+      }
+      app.note = $('#note').value.trim();
+      const draft = {
+        jobId: job.id,
+        person: app.person,
+        note: app.note,
+        resumeName: app.file.name,
+        updated: new Date().toISOString(),
+      };
+      drafts = [...drafts.filter((item) => item.jobId !== job.id), draft];
+      const stored = persist('ezjobs-drafts', drafts);
+      render();
+      $('#modalContent').innerHTML =
+        `<div class="success"><div class="success-mark" aria-hidden="true">✓</div><span class="kicker">${stored ? 'DRAFT SAVED ON THIS DEVICE' : 'DRAFT READY FOR THIS VISIT'}</span><h2 id="modalTitle">A good step forward.</h2><p class="sub">Your draft for <strong>${job.title}</strong> at ${job.company} is ready. ${stored ? 'You can revisit it from your profile.' : 'Device storage is unavailable; download a copy before leaving.'}</p><p class="notice">No application has been sent. This demo saves your details, note, and résumé filename only.</p><button class="btn btn-dark" id="downloadDraft">Download draft ↓</button><button class="btn btn-ghost" data-close>Back to jobs</button></div>`;
+      $('#downloadDraft').onclick = () => downloadDraft(draft);
+      focusModal();
+    };
+  }
+  focusModal();
+}
+function downloadDraft(draft) {
+  const job = JOBS.find((item) => item.id === draft.jobId);
+  const content = `EZJobs — Application draft (not submitted)\n\n${job?.title || 'Role'} at ${job?.company || 'Company'}\n\n${draft.person.first} ${draft.person.last}\n${draft.person.email}\n${draft.person.link}\n\nRésumé filename: ${draft.resumeName}\nThe résumé itself is not included.\n\n${draft.note}\n`;
+  const url = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `ezjobs-draft-${draft.jobId}.txt`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function showProfile() {
+  $('#modalContent').innerHTML =
+    `<span class="kicker">YOUR NEXT CHAPTER STARTS WITH YOU</span><h2 id="modalTitle">${profile ? 'Your profile' : 'A little about you.'}</h2><p class="sub">Save your details to make your next draft easier.</p><form id="profileForm">${personFields(profile || {})}<p class="notice">Stored only in this browser. There’s no account or cross-device sync. Avoid saving personal details on a shared device.</p><div class="modal-actions"><button type="button" class="btn btn-ghost" data-close>Close</button><button class="btn btn-dark" type="submit">Save profile</button></div></form><h3 style="font-size:15px;margin-top:28px">Your application drafts (${drafts.length})</h3>${drafts.length ? drafts.map((draft) => `<div class="draft-item"><div><h3>${html(JOBS.find((job) => job.id === draft.jobId)?.title || 'Saved role')}</h3><p>${html(draft.person.first)} · Saved on this device</p></div><button class="text-btn" data-edit-draft="${draft.jobId}">Edit</button><button class="text-btn" data-download="${draft.jobId}">Download</button><button class="text-btn" data-delete-draft="${draft.jobId}" aria-label="Delete draft for ${html(JOBS.find((job) => job.id === draft.jobId)?.title || 'saved role')}">Delete</button></div>`).join('') : '<p class="sub">Nothing here yet. Find a role you like and prepare your first draft.</p>'}`;
+  $('#profileForm').onsubmit = (event) => {
+    event.preventDefault();
+    if (!validPerson(event.target)) return;
+    profile = personFromForm(event.target);
+    const stored = persist('ezjobs-profile', profile);
+    render();
+    if (stored) toast('Your profile is saved on this device.');
+  };
+  document.querySelectorAll('[data-edit-draft]').forEach(
+    (button) =>
+      (button.onclick = () => {
+        const id = Number(button.dataset.editDraft);
+        if (JOBS.some((job) => job.id === id)) openApply(id);
+        else toast('This sample role is no longer available. You can still download its draft.');
+      }),
+  );
+  document
+    .querySelectorAll('[data-download]')
+    .forEach(
+      (button) =>
+        (button.onclick = () =>
+          downloadDraft(drafts.find((draft) => draft.jobId === Number(button.dataset.download)))),
+    );
+  document.querySelectorAll('[data-delete-draft]').forEach(
+    (button) =>
+      (button.onclick = () => {
+        drafts = drafts.filter((draft) => draft.jobId !== Number(button.dataset.deleteDraft));
+        persist('ezjobs-drafts', drafts);
+        render();
+        showProfile();
+        focusModal();
+      }),
+  );
+}
+$('#profileBtn').onclick = () => {
+  showProfile();
+  openDialog();
+  focusModal();
+};
+$('#privacyBtn').onclick = () => {
+  $('#modalContent').innerHTML =
+    `<span class="kicker">YOUR DATA, YOUR CALL</span><h2 id="modalTitle">Just on this device.</h2><p class="sub">Saved jobs, profile details, and application drafts are kept in this browser’s local storage. They aren’t sent to employers or to an EZJobs server.</p><p class="sub">Résumé contents are never uploaded or stored. Only the filename is saved with a draft. Google Fonts is used to display the site’s typefaces.</p><p class="notice">Clearing browser storage removes your saved data. Download any drafts you want to keep before clearing it.</p><div class="modal-actions"><button class="btn btn-ghost" id="clearData">Clear my saved data</button><button class="btn btn-dark" data-close>Got it</button></div><p id="privacyStatus" role="status" class="sub"></p>`;
+  openDialog();
+  $('#clearData').onclick = () => {
+    $('#clearData').textContent = 'Confirm: delete all local data';
+    $('#privacyStatus').textContent =
+      'This removes your saved jobs, profile, and drafts. Click again to confirm.';
+    $('#clearData').onclick = () => {
+      try {
+        ['ezjobs-saved', 'ezjobs-profile', 'ezjobs-drafts'].forEach((key) =>
+          storage.removeItem(key),
+        );
+      } catch {
+        $('#privacyStatus').textContent =
+          'Browser storage could not be cleared. Please clear site data in your browser settings.';
+        return;
+      }
+      state.saved.clear();
+      profile = null;
+      drafts = [];
+      render();
+      $('#appDialog').close();
+      toast('Your saved data has been cleared.');
+    };
+  };
+};
+window.addEventListener('storage', (event) => {
+  if (event.key === 'ezjobs-saved' || event.key === null) {
+    state.saved = new Set(
+      read(
+        'ezjobs-saved',
+        [],
+        (value) => Array.isArray(value) && value.every(Number.isInteger),
+      ).filter((id) => JOBS.some((job) => job.id === id)),
+    );
+    render();
+  }
+});
+render();

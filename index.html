@@ -1,84 +1,231 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="EZJobs — find work that fits and apply in minutes." />
-  <title>EZJobs — Find work that fits</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <div class="grain"></div>
-  <header class="topbar">
-    <a class="brand" href="#" aria-label="EZJobs home"><span class="brand-mark">EZ</span><span>Jobs</span></a>
-    <nav aria-label="Main navigation">
-      <a class="active" href="#jobs">Find jobs</a>
-      <button class="nav-link" id="savedNav">Saved <span class="count" id="savedCount">0</span></button>
-      <a href="#how">How it works</a>
-    </nav>
-    <div class="nav-actions">
-      <button class="btn btn-ghost" id="signInBtn">Sign in</button>
-      <button class="btn btn-dark" id="profileBtn">Create profile <span>↗</span></button>
-    </div>
-    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">☰</button>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="eyebrow"><span></span> The simpler way to get hired</div>
-      <h1>Good jobs.<br><em>Less job hunting.</em></h1>
-      <p>Skip the endless tabs. Discover roles matched to what you want, then apply in a few easy steps.</p>
-      <form class="searchbar" id="searchForm">
-        <label><span class="search-icon">⌕</span><input id="searchInput" type="search" placeholder="Job title, skill, or company" aria-label="Job title, skill, or company"></label>
-        <div class="divider"></div>
-        <label class="location"><span>⌖</span><input id="locationInput" type="text" placeholder="City or remote" aria-label="City or remote"></label>
-        <button class="btn btn-accent" type="submit">Find jobs <span>→</span></button>
-      </form>
-      <div class="popular"><span>Popular:</span><button data-search="Designer">Designer</button><button data-search="Developer">Developer</button><button data-search="Marketing">Marketing</button><button data-search="Remote">Remote</button></div>
-      <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="spark s1">✦</div><div class="spark s2">✦</div><div class="mini-card mc1"><b>4.9</b><span>candidate rating</span></div><div class="mini-card mc2"><span>New match</span><b>Product Designer</b></div></div>
-    </section>
-
-    <section class="jobs-section" id="jobs">
-      <div class="section-head">
-        <div><span class="kicker">HANDPICKED FOR YOU</span><h2>Jobs worth your time</h2></div>
-        <p>Fresh opportunities from teams that value people, not paperwork.</p>
-      </div>
-      <div class="filter-row" id="filters">
-        <button class="filter active" data-filter="All">All roles</button>
-        <button class="filter" data-filter="Design">Design</button>
-        <button class="filter" data-filter="Engineering">Engineering</button>
-        <button class="filter" data-filter="Marketing">Marketing</button>
-        <button class="filter" data-filter="Operations">Operations</button>
-        <button class="filter filter-more" id="remoteFilter">Remote only <span>○</span></button>
-      </div>
-      <div class="job-layout">
-        <div class="job-list" id="jobList" aria-live="polite"></div>
-        <aside class="job-detail" id="jobDetail"></aside>
-      </div>
-    </section>
-
-    <section class="how" id="how">
-      <div><span class="kicker">YOUR NEXT MOVE, MADE EASY</span><h2>From “maybe” to<br>“I got the job.”</h2></div>
-      <div class="steps">
-        <article><span>01</span><div class="step-icon">◎</div><h3>Tell us what fits</h3><p>Share what you’re good at and what kind of work you want.</p></article>
-        <article><span>02</span><div class="step-icon">⌁</div><h3>Meet your matches</h3><p>See clear, relevant roles without digging through the noise.</p></article>
-        <article><span>03</span><div class="step-icon">↗</div><h3>Apply in minutes</h3><p>Use one simple profile to apply—then keep track in one place.</p></article>
-      </div>
-    </section>
-  </main>
-
-  <div class="modal-wrap" id="applyModal" aria-hidden="true">
-    <div class="modal-backdrop" data-close></div>
-    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button class="modal-close" data-close aria-label="Close">×</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f4ed" />
+    <meta
+      name="description"
+      content="A calmer way to find your next role. Explore jobs with transparent salaries, save your favorites, and prepare your next application."
+    />
+    <title>EZJobs — Your next chapter starts here</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="jobs.js" defer></script>
+    <script src="core.js" defer></script>
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#jobs">Skip to jobs</a>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="EZJobs home"
+        ><span class="brand-mark">ez</span>jobs<span class="brand-dot">.</span></a
+      >
+      <nav id="mainNav" aria-label="Main navigation">
+        <a class="active" href="#jobs" id="findNav" aria-current="page">Find a job</a>
+        <button class="nav-link" id="savedNav" aria-pressed="false">
+          Saved jobs <span class="count" id="savedCount">0</span>
+        </button>
+        <a href="#how">How it works</a>
+      </nav>
+      <button class="btn btn-dark profile-nav" id="profileBtn">
+        My profile <span aria-hidden="true">↗</span>
+      </button>
+      <button
+        class="menu-btn"
+        id="menuBtn"
+        aria-label="Toggle navigation"
+        aria-controls="mainNav"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+    </header>
+    <main id="mainContent">
+      <section class="hero" aria-labelledby="heroTitle">
+        <div class="hero-copy">
+          <div class="eyebrow">
+            <span class="status-dot"></span> BIG POSSIBILITIES. LESS BUSYWORK.
+          </div>
+          <h1 id="heroTitle">
+            Your next chapter.<br /><em>Make it a good one.</em
+            ><svg class="underline" viewBox="0 0 460 16" aria-hidden="true">
+              <path d="M3 12 Q180 -4 455 8" />
+            </svg>
+          </h1>
+          <p>
+            A job that fits your life, not the other way around.<br class="desktop-break" />
+            Find your people, know your worth, and take the next step.
+          </p>
+          <a class="hero-link" href="#jobs"
+            >Find your next opportunity <span aria-hidden="true">↘</span></a
+          >
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="art-ring ring-one"></div>
+          <div class="art-ring ring-two"></div>
+          <span class="art-caption">A LITTLE CHANGE.<br />A WHOLE NEW CHAPTER.</span>
+          <div class="art-spark">✳</div>
+          <div class="floating-card">
+            <span class="mini-logo">N</span>
+            <div>
+              <small>A fresh perspective</small><strong>Senior Product Designer</strong
+              ><span>Northstar · Remote</span>
+            </div>
+            <b>↗</b>
+          </div>
+          <div class="art-note"><span>✓</span> Work that feels like you.</div>
+          <div class="art-sticker">GOOD<br />THINGS<br /><span>AHEAD ↗</span></div>
+          <svg class="art-arrow" viewBox="0 0 130 100">
+            <path d="M10 10 C100 10 120 40 68 78 M68 78 L70 48 M68 78 L100 73" />
+          </svg>
+        </div>
+        <form class="searchbar" id="searchForm" role="search">
+          <label
+            ><svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="10" cy="10" r="6" />
+              <path d="m15 15 5 5" /></svg
+            ><span
+              ><span class="search-label">WHAT DO YOU WANT TO DO?</span
+              ><input
+                id="searchInput"
+                type="search"
+                placeholder="Job title, skill, or company"
+                autocomplete="off" /></span
+          ></label>
+          <label class="location"
+            ><svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 0 1 14 0Z" />
+              <circle cx="12" cy="10" r="2" /></svg
+            ><span
+              ><span class="search-label">WHERE FEELS LIKE HOME?</span
+              ><input
+                id="locationInput"
+                type="search"
+                placeholder="City, region, or remote"
+                autocomplete="off" /></span
+          ></label>
+          <button class="btn btn-accent" type="submit">
+            Find my next job <span aria-hidden="true">↗</span>
+          </button>
+        </form>
+        <div class="popular">
+          <span>A few ideas:</span><button data-search="Design">Design</button
+          ><button data-search="Engineering">Engineering</button
+          ><button data-search="Marketing">Marketing</button
+          ><button data-search="Remote">Work from anywhere ↗</button>
+        </div>
+      </section>
+      <section class="benefits" aria-label="Why EZJobs">
+        <span><b>↗</b> Your next move, made simpler</span><span><b>◎</b> Salaries upfront</span
+        ><span><b>⌂</b> Room for remote</span><span><b>♡</b> Keep your favorites close</span>
+      </section>
+      <section class="jobs-section" id="jobs" aria-labelledby="jobsTitle" tabindex="-1">
+        <div class="section-head">
+          <div>
+            <span class="kicker">LESS SCROLLING. MORE POSSIBILITY.</span>
+            <h2 id="jobsTitle">Find your kind of work<span>.</span></h2>
+          </div>
+          <p>Good teams. Clear expectations.<br />A little closer to what’s next.</p>
+        </div>
+        <div class="filter-row" id="filters" aria-label="Filter by discipline">
+          <button class="filter active" data-filter="All" aria-pressed="true">
+            All roles <span>06</span>
+          </button>
+          <button class="filter" data-filter="Design" aria-pressed="false">Design</button>
+          <button class="filter" data-filter="Engineering" aria-pressed="false">Engineering</button>
+          <button class="filter" data-filter="Marketing" aria-pressed="false">Marketing</button>
+          <button class="filter" data-filter="Operations" aria-pressed="false">Operations</button>
+          <button class="filter filter-remote" id="remoteFilter" aria-pressed="false">
+            <span class="switch" aria-hidden="true"></span> Remote only
+          </button>
+        </div>
+        <div class="results-toolbar">
+          <p id="resultCount" role="status" aria-live="polite"></p>
+          <div>
+            <button class="text-btn" id="clearFilters" hidden>Clear filters ×</button
+            ><label for="sortJobs">Sort by</label
+            ><select id="sortJobs">
+              <option value="recent">Newest first</option>
+              <option value="company">Company A–Z</option>
+              <option value="title">Job title A–Z</option>
+            </select>
+          </div>
+        </div>
+        <div class="job-layout">
+          <div class="job-list" id="jobList" aria-label="Job results"></div>
+          <aside
+            class="job-detail"
+            id="jobDetail"
+            aria-label="Selected job details"
+            tabindex="-1"
+          ></aside>
+        </div>
+        <p class="demo-note">
+          <span aria-hidden="true">ⓘ</span> You’re exploring a demo. These are sample roles;
+          applications stay as drafts on this device.
+        </p>
+      </section>
+      <section class="how" id="how" aria-labelledby="howTitle">
+        <div class="how-heading">
+          <span class="kicker">A SMALL STEP. A FRESH START.</span>
+          <h2 id="howTitle">Less of the hard part.<br />More of the <em>good part.</em></h2>
+          <p>Your next chapter doesn’t need to start with a hundred open tabs.</p>
+          <a href="#jobs" class="btn btn-accent"
+            >Explore the possibilities <span aria-hidden="true">↗</span></a
+          >
+        </div>
+        <div class="steps">
+          <article>
+            <span>01</span>
+            <div>
+              <h3>Find what fits</h3>
+              <p>Browse roles by skill, location, and the way you want to work.</p>
+            </div>
+            <b aria-hidden="true">⌕</b>
+          </article>
+          <article>
+            <span>02</span>
+            <div>
+              <h3>Make a shortlist</h3>
+              <p>Keep promising roles together. Come back when the time feels right.</p>
+            </div>
+            <b aria-hidden="true">♡</b>
+          </article>
+          <article>
+            <span>03</span>
+            <div>
+              <h3>Put your best self forward</h3>
+              <p>Create your profile and prepare a thoughtful application draft.</p>
+            </div>
+            <b aria-hidden="true">↗</b>
+          </article>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <a class="brand" href="#"
+        ><span class="brand-mark">ez</span>jobs<span class="brand-dot">.</span></a
+      >
+      <p>A little less searching. A little more living.</p>
+      <button class="text-btn" id="privacyBtn">Your data & privacy</button
+      ><span>Made for your next move ↗</span>
+    </footer>
+    <dialog id="appDialog" aria-labelledby="modalTitle">
+      <button class="modal-close" id="closeDialog" aria-label="Close dialog">×</button>
       <div id="modalContent"></div>
-    </section>
-  </div>
-
-  <div class="toast" id="toast" role="status"></div>
-  <script src="app.js"></script>
-</body>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <noscript
+      ><p class="noscript">
+        Enable JavaScript to search jobs, save favorites, and prepare drafts.
+      </p></noscript
+    >
+  </body>
 </html>

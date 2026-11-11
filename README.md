@@ -1,5 +1,9 @@
 # EZJobs
 
+Names to keep in mind: **EZJobs** and **JOBBY AI**.
+
+Potential tagline: **Apply to jobs you find.**
+
 A responsive job discovery prototype built with plain HTML, CSS, and JavaScript. Browse six sample roles, build a shortlist, and prepare application drafts without creating an account.
 
 ## Run locally
